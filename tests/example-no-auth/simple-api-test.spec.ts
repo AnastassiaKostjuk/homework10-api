@@ -90,3 +90,72 @@ test('post product with correct data should receive code 201', async ({ request 
   // check that body.price is number type
   expect(typeof responseBody.price).toBe('number')
 })
+
+
+//homework10-negative-tests
+test.describe('POST /api/products negative tests', () => {
+  test.fail('POST product without name should receive code 400', async ({ request }) => {
+    const response = await request.post('https://shop.tl-academy.ee/api/products',
+      {
+        data: {
+          category: 'Vegetables',
+          price: 1.45,
+          quantity: 10
+        }
+      })
+
+    const responseBody = await response.json()
+    console.log('response body:', responseBody)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseBody.error).toBe('Name is required')
+  })
+
+  test('POST product without name and category should receive code 400', async ({ request }) => {
+    const response = await request.post('https://shop.tl-academy.ee/api/products',
+      {
+        data: {
+          price: 1.45,
+          quantity: 10
+        }
+      })
+
+    const responseBody = await response.json()
+    console.log('response body:', responseBody)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseBody.error).toBe('Name is required')
+  })
+
+  test('POST product with quantity below 0 should receive code 400', async ({ request }) => {
+    const response = await request.post('https://shop.tl-academy.ee/api/products',
+      {
+        data: {
+          name: 'Apple',
+          category: 'Fruit',
+          price: 1.45,
+          quantity: -10
+        }
+      })
+
+    const responseBody = await response.json()
+    console.log('response body:', responseBody)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseBody.error).toBe('Quantity must be a non-negative integer')
+  })
+
+  test('POST product with price as a string should receive code 400', async ({ request }) => {
+    const response = await request.post('https://shop.tl-academy.ee/api/products',
+      {
+        data: {
+          name: 'Apple',
+          category: 'Fruit',
+          price: '1.45',
+          quantity: 10
+        }
+      })
+
+    const responseBody = await response.json()
+    console.log('response body:', responseBody)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseBody.error).toBe('Price must be a number')
+  })
+})
