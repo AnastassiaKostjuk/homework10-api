@@ -1,12 +1,17 @@
+
 name: Check formatting, linting, and run tests
 
 on:
   push:
     branches:
-      [main, develop]
+      - main
+      - develop
+      - 'homework-*'
+      - 'homework10-*'
   pull_request:
     branches:
-      - main
+      - '**'
+
 
 jobs:
   format-lint-test:
@@ -44,5 +49,5 @@ jobs:
           DL_USERNAME: ${{ secrets.DL_USERNAME }}
           DL_PASSWORD: ${{ secrets.DL_PASSWORD }}
         run: |
-          echo "Running Playwright to execute API tests..."
-          npx playwright test
+          echo "Running Playwright homework 12 auth tests..."
+          npx playwright test tests/delivery/auth.spec.ts
