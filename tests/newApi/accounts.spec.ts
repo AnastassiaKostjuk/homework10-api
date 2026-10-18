@@ -85,7 +85,7 @@ test.describe('/api/accounts negative tests', () => {
 test.describe('Check list /api/accounts', () => {
   test('GET /api/accounts', async ({ request }) => {
     const response = await request.get(`${baseUrl}/api/accounts`, {headers: authHeader})
-    console.log('Status:' , response.status())
+    console.log('Statusgit status:' , response.status())
     console.log('Response:' , await response.json())
     expect(response.status()).toBe(StatusCodes.OK)
   })
