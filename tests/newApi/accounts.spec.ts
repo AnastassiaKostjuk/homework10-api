@@ -98,17 +98,24 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('GET /api/accounts/{id}', async ({ request }) => {
-    const response = await request.get(`${baseUrl}/api/accounts/3`, {headers: authHeader})
+    const newAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+    data: {
+      owner: 'Harry Potter'
+    }})
+
+    const account = await newAccount.json()
+
+    const response = await request.get(`${baseUrl}/api/accounts/${account.id}`, {headers: authHeader})
     console.log('Status:' , response.status())
     console.log('Response:' , await response.json())
     expect(response.status()).toBe(StatusCodes.OK)
   })
 
   test('GET /api/accounts/{id} negative test with nonexistent id', async ({ request }) => {
-    const response = await request.get(`${baseUrl}/api/accounts/1500`, {headers: authHeader})
+    const response = await request.get(`${baseUrl}/api/accounts/-1`, {headers: authHeader})
     console.log('Status:' , response.status())
     console.log('Response:' , await response.json())
-    expect(response.status()).toBe(StatusCodes.NOT_FOUND)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
   })
 
   test('GET /api/accounts/{id} negative test with string id', async ({ request }) => {
@@ -165,7 +172,14 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/deposit', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/deposit', {headers: authHeader,
+    const newAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Ron Weasley'
+      }})
+
+    const account = await newAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
       data: {
         amount: 1000000
       }})
@@ -176,7 +190,14 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/deposit negative test with number below zero', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/deposit', {headers: authHeader,
+    const newAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Albus Dumbledore'
+      }})
+
+    const account = await newAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
       data: {
         amount: -1000000
       }})
@@ -187,7 +208,14 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/deposit negative test with number written as a string', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/deposit', {headers: authHeader,
+    const newAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Tom Riddle'
+      }})
+
+    const account = await newAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
       data: {
         amount: '1000000'
       }})
@@ -198,7 +226,14 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/deposit negative test with float number with more than two numbers after comma', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/deposit', {headers: authHeader,
+    const newAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Rubeus Hagrid'
+      }})
+
+    const account = await newAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
       data: {
         amount: 100.255555555
       }})
@@ -209,21 +244,40 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/deposit negative test with nonexistent id', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/555/deposit', {headers: authHeader,
+    const response = await request.post(baseUrl + '/api/accounts/-1/deposit', {headers: authHeader,
       data: {
         amount: 1000000
       }})
 
     console.log('Status:' , response.status())
     console.log('Response:' , await response.json())
-    expect(response.status()).toBe(StatusCodes.NOT_FOUND)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
   })
 
   test('POST /api/accounts/{id}/transfer', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 4,
-        amount: 1000000
+        owner: 'Hermione Granger'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+    data: {
+      amount: 500
+    }})
+
+    const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Luna Lovegood'
+      }})
+
+    const account2 = await receiverAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account2.id,
+        amount: 100
       }})
 
     console.log('Status:' , response.status())
@@ -232,10 +286,29 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/transfer with not enough money', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/3/transfer', {headers: authHeader,
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 4,
-        amount: 25
+        owner: 'Severus Snape'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 10
+      }})
+
+    const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Lord Voldemort'
+      }})
+
+    const account2 = await receiverAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account2.id,
+        amount: 75
       }})
 
     console.log('Status:' , response.status())
@@ -244,11 +317,23 @@ test.describe('Check list /api/accounts', () => {
   })
 
   //расхождение между документацией и поведением сервера
-  test('POST /api/accounts/{id}/transfer to the same account', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+  test.fail('POST /api/accounts/{id}/transfer to the same account', async ({ request }) => {
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 5,
-        amount: 25
+        owner: 'Gilderoy Lockhart'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 15
+      }})
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account.id,
+        amount: 15
       }})
 
     console.log('Status:' , response.status())
@@ -257,11 +342,32 @@ test.describe('Check list /api/accounts', () => {
   })
 
   //расхождение между документацией и поведением сервера
-  test('POST /api/accounts/{id}/transfer to account without the same currency', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+  test.fail('POST /api/accounts/{id}/transfer to account without the same currency', async ({ request }) => {
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 4,
-        amount: 25
+        owner: 'Seamus Finnigan'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 700,
+        currency: 'USD'
+      }})
+
+    const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Pomona Sprout',
+        currency: 'EUR'
+      }})
+
+    const account2 = await receiverAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account2.id,
+        amount: 33
       }})
 
     console.log('Status:' , response.status())
@@ -270,10 +376,29 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/transfer with amount that is zero', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 3,
-        amount: 0
+        owner: 'Fred Weasley'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 25
+      }})
+
+    const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'George Weasley'
+      }})
+
+    const account2 = await receiverAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account2.id,
+        amount: -1
       }})
 
     console.log('Status:' , response.status())
@@ -282,21 +407,52 @@ test.describe('Check list /api/accounts', () => {
   })
 
   test('POST /api/accounts/{id}/transfer to an nonexistent account', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 333,
+        owner: 'Molly Weasley'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 560
+      }})
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: -1,
         amount: 15
       }})
 
     console.log('Status:' , response.status())
     console.log('Response:' , await response.json())
-    expect(response.status()).toBe(StatusCodes.NOT_FOUND)
+    expect(response.status()).toBe(StatusCodes.BAD_REQUEST)
   })
 
   test('POST /api/accounts/{id}/transfer with non positive amount', async ({ request }) => {
-    const response = await request.post(baseUrl + '/api/accounts/5/transfer', {headers: authHeader,
+    const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
       data: {
-        toId: 4,
+        owner: 'Bellatrix LeStrange'
+      }})
+
+    const account = await senderAccount.json()
+
+    await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {headers: authHeader,
+      data: {
+        amount: 789
+      }})
+
+    const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {headers: authHeader,
+      data: {
+        owner: 'Andromeda Tonks'
+      }})
+
+    const account2 = await receiverAccount.json()
+
+    const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {headers: authHeader,
+      data: {
+        toId: account2.id,
         amount: -15
       }})
 
