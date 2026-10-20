@@ -93,7 +93,7 @@ test('post product with correct data should receive code 201', async ({ request 
 
 //homework10-negative-tests
 test.describe('POST /api/products negative tests', () => {
-  test.fail('POST product without name should receive code 400', async ({ request }) => {
+  test('POST product without name should receive code 400', async ({ request }) => {
     const response = await request.post('https://shop.tl-academy.ee/api/products', {
       data: {
         category: 'Vegetables',
