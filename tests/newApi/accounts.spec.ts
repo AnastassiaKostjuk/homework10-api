@@ -101,7 +101,7 @@ test.describe('Check list /api/accounts', () => {
   test('GET /api/accounts/{id}', async ({ request }) => {
     const newAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Harry Potter')
+      data: new AccountDTO('Harry Potter'),
     })
 
     const account = await newAccount.json()
@@ -131,7 +131,7 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts with owner only', async ({ request }) => {
     const response = await request.post(baseUrl + '/api/accounts', {
       headers: authHeader,
-      data: new AccountDTO('Hermione Granger')
+      data: new AccountDTO('Hermione Granger'),
     })
 
     console.log('Status:', response.status())
@@ -153,7 +153,7 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts without owner', async ({ request }) => {
     const response = await request.post(baseUrl + '/api/accounts', {
       headers: authHeader,
-      data: new AccountWithoutOwnerDTO('GBP')
+      data: new AccountWithoutOwnerDTO('GBP'),
     })
 
     console.log('Status:', response.status())
@@ -175,14 +175,14 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/deposit', async ({ request }) => {
     const newAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Ron Weasley')
+      data: new AccountDTO('Ron Weasley'),
     })
 
     const account = await newAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(1000000)
+      data: new DepositDTO(1000000),
     })
 
     console.log('Status:', response.status())
@@ -195,14 +195,14 @@ test.describe('Check list /api/accounts', () => {
   }) => {
     const newAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Albus Dumbledore')
+      data: new AccountDTO('Albus Dumbledore'),
     })
 
     const account = await newAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(-1000000)
+      data: new DepositDTO(-1000000),
     })
 
     console.log('Status:', response.status())
@@ -215,14 +215,14 @@ test.describe('Check list /api/accounts', () => {
   }) => {
     const newAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Tom Riddle')
+      data: new AccountDTO('Tom Riddle'),
     })
 
     const account = await newAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO('1000000')
+      data: new DepositDTO('1000000'),
     })
 
     console.log('Status:', response.status())
@@ -235,14 +235,14 @@ test.describe('Check list /api/accounts', () => {
   }) => {
     const newAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Rubeus Hagrid')
+      data: new AccountDTO('Rubeus Hagrid'),
     })
 
     const account = await newAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(100.255555555)
+      data: new DepositDTO(100.255555555),
     })
 
     console.log('Status:', response.status())
@@ -253,7 +253,7 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/deposit negative test with invalid id', async ({ request }) => {
     const response = await request.post(baseUrl + '/api/accounts/-1/deposit', {
       headers: authHeader,
-      data: new DepositDTO(1000000)
+      data: new DepositDTO(1000000),
     })
 
     console.log('Status:', response.status())
@@ -264,26 +264,26 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/transfer', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Nymphadora Tonks')
+      data: new AccountDTO('Nymphadora Tonks'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(500)
+      data: new DepositDTO(500),
     })
 
     const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Luna Lovegood')
+      data: new AccountDTO('Luna Lovegood'),
     })
 
     const account2 = await receiverAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(account2.id, 100)
+      data: new TransferDTO(account2.id, 100),
     })
 
     console.log('Status:', response.status())
@@ -294,26 +294,26 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/transfer with not enough money', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Severus Snape')
+      data: new AccountDTO('Severus Snape'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(10)
+      data: new DepositDTO(10),
     })
 
     const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Lord Voldemort')
+      data: new AccountDTO('Lord Voldemort'),
     })
 
     const account2 = await receiverAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(account2.id, 75)
+      data: new TransferDTO(account2.id, 75),
     })
 
     console.log('Status:', response.status())
@@ -325,19 +325,19 @@ test.describe('Check list /api/accounts', () => {
   test.fail('POST /api/accounts/{id}/transfer to the same account', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Gilderoy Lockhart')
+      data: new AccountDTO('Gilderoy Lockhart'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(15)
+      data: new DepositDTO(15),
     })
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(account.id, 15)
+      data: new TransferDTO(account.id, 15),
     })
 
     console.log('Status:', response.status())
@@ -346,29 +346,31 @@ test.describe('Check list /api/accounts', () => {
   })
 
   //расхождение между документацией и поведением сервера
-  test.fail('POST /api/accounts/{id}/transfer to account without the same currency', async ({ request }) => {
+  test.fail(
+    'POST /api/accounts/{id}/transfer to account without the same currency',
+    async ({ request }) => {
       const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
         headers: authHeader,
-        data: new AccountDTO('Seamus Finnigan', 'USD')
+        data: new AccountDTO('Seamus Finnigan', 'USD'),
       })
 
       const account = await senderAccount.json()
 
       await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
         headers: authHeader,
-        data: new DepositDTO(700)
+        data: new DepositDTO(700),
       })
 
       const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {
         headers: authHeader,
-        data: new AccountDTO('Pomona Sprout', 'EUR')
+        data: new AccountDTO('Pomona Sprout', 'EUR'),
       })
 
       const account2 = await receiverAccount.json()
 
       const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
         headers: authHeader,
-        data: new TransferDTO(account2.id, 33)
+        data: new TransferDTO(account2.id, 33),
       })
 
       console.log('Status:', response.status())
@@ -380,26 +382,26 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/transfer with amount that is zero', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Fred Weasley')
+      data: new AccountDTO('Fred Weasley'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(25)
+      data: new DepositDTO(25),
     })
 
     const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('George Weasley')
+      data: new AccountDTO('George Weasley'),
     })
 
     const account2 = await receiverAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(account2.id, 0)
+      data: new TransferDTO(account2.id, 0),
     })
 
     console.log('Status:', response.status())
@@ -410,27 +412,26 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/transfer to an nonexistent account', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Molly Weasley')
+      data: new AccountDTO('Molly Weasley'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(560)
+      data: new DepositDTO(560),
     })
 
     const nonexistentId = 999999999999999
-    const receiverAccount = await request.get(`${baseUrl}/api/accounts/${nonexistentId}`,
-      { headers:
-        authHeader },
-    )
+    const receiverAccount = await request.get(`${baseUrl}/api/accounts/${nonexistentId}`, {
+      headers: authHeader,
+    })
 
     expect(receiverAccount.status()).toBe(StatusCodes.NOT_FOUND)
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(nonexistentId, 15)
+      data: new TransferDTO(nonexistentId, 15),
     })
 
     console.log('Status:', response.status())
@@ -441,26 +442,26 @@ test.describe('Check list /api/accounts', () => {
   test('POST /api/accounts/{id}/transfer with non positive amount', async ({ request }) => {
     const senderAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Bellatrix LeStrange')
+      data: new AccountDTO('Bellatrix LeStrange'),
     })
 
     const account = await senderAccount.json()
 
     await request.post(baseUrl + `/api/accounts/${account.id}/deposit`, {
       headers: authHeader,
-      data: new DepositDTO(789)
+      data: new DepositDTO(789),
     })
 
     const receiverAccount = await request.post(`${baseUrl}/api/accounts/`, {
       headers: authHeader,
-      data: new AccountDTO('Andromeda Tonks')
+      data: new AccountDTO('Andromeda Tonks'),
     })
 
     const account2 = await receiverAccount.json()
 
     const response = await request.post(baseUrl + `/api/accounts/${account.id}/transfer`, {
       headers: authHeader,
-      data: new TransferDTO(account2.id, -15)
+      data: new TransferDTO(account2.id, -15),
     })
 
     console.log('Status:', response.status())
